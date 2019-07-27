@@ -82,6 +82,8 @@ Write out `7` in longhand.
 
 ```
 -- Your code goes here
+_ : ℕ
+_ = suc (suc (suc (suc (suc (suc (suc zero))))))
 ```
 
 
@@ -432,6 +434,19 @@ Compute `3 + 4`, writing out your reasoning as a chain of equations.
 
 ```
 -- Your code goes here
+_ : 3 + 4 ≡ 7
+_ =
+  begin
+  3 + 4
+  ≡⟨⟩ suc (2 + 4)
+  ≡⟨⟩ suc (suc (1 + 4))
+  ≡⟨⟩ suc (suc (suc (zero + 4)))
+  ≡⟨⟩ suc (suc (suc 4))
+  ≡⟨⟩ suc (suc 5)
+  ≡⟨⟩ suc 6
+  ≡⟨⟩ 7
+  ∎
+
 ```
 
 
@@ -493,6 +508,18 @@ Compute `3 * 4`, writing out your reasoning as a chain of equations.
 
 ```
 -- Your code goes here
+_ =
+  begin
+    3 * 4
+  ≡⟨⟩ (suc 2) * 4
+  ≡⟨⟩ 4 + (2 * 4)
+  ≡⟨⟩ 4 + ((suc 1) * 4)
+  ≡⟨⟩ 4 + (4 + (1 * 4))
+  ≡⟨⟩ 4 + (4 + (suc zero * 4))
+  ≡⟨⟩ 4 + (4 + (4 + (zero * 4)))
+  ≡⟨⟩ 4 + (4 + (4 + zero))
+  ≡⟨⟩ 12
+  ∎
 ```
 
 
@@ -507,6 +534,21 @@ Check that `3 ^ 4` is `81`.
 
 ```
 -- Your code goes here
+_^_ : ℕ → ℕ → ℕ
+m ^ zero = 1
+m ^ (suc n) = m * (m ^ n)
+
+_ : (3 ^ 4) ≡ 81
+_ =
+  begin
+    3 ^ 4
+  ≡⟨⟩ 3 * (3 ^ 3)
+  ≡⟨⟩ 3 * (3 * (3 ^ 2))
+  ≡⟨⟩ 3 * (3 * (3 * (3 ^ 1)))
+  ≡⟨⟩ 3 * (3 * (3 * (3 * (3 ^ 0))))
+  ≡⟨⟩ 3 * (3 * (3 * (3 * 1)))
+  ≡⟨⟩ 81
+  ∎
 ```
 
 
@@ -572,6 +614,14 @@ Compute `5 ∸ 3` and `3 ∸ 5`, writing out your reasoning as a chain of equati
 
 ```
 -- Your code goes here
+_ : 5 ∸ 3 ≡ 2
+_ = begin
+  5 ∸ 3
+  ≡⟨⟩ 4 ∸ 2
+  ≡⟨⟩ 3 ∸ 1
+  ≡⟨⟩ 2 ∸ 0
+  ≡⟨⟩ 2
+  ∎
 ```
 
 
@@ -918,6 +968,68 @@ Confirm that these both give the correct answer for zero through four.
 
 ```
 -- Your code goes here
+inc : Bin → Bin
+inc nil = nil
+inc (x0 b) = (x1 b)
+inc (x1 nil) = x0 (x1 nil)
+inc (x1 b) = x0 (inc b)
+
+-- inc zero ≡ one
+_ : inc (x0 nil) ≡ x1 nil
+_ = refl
+
+-- inc one ≡ two
+_ : inc (x1 nil) ≡ x0 (x1 nil)
+_ = refl
+
+-- inc two ≡ three
+_ : inc (x0 (x1 nil)) ≡ x1 (x1 nil)
+_ = refl
+
+-- inc three ≡ four
+_ : inc (x1 (x1 nil)) ≡ x0 (x0 (x1 nil))
+_ = refl
+
+-- inc four = five
+_ : inc (x0 (x0 (x1 nil))) ≡ x1 (x0 (x1 nil))
+_ = refl
+
+to : ℕ → Bin
+to zero = x0 nil
+to (suc n) = inc (to n)
+
+_ : to 0 ≡ x0 nil
+_ = refl
+
+_ : to 1 ≡ x1 nil
+_ = refl
+
+_ : to 2 ≡ x0 (x1 nil)
+_ = refl
+
+_ : to 3 ≡ x1 (x1 nil)
+_ = refl
+
+_ : to 4 ≡ x0 (x0 (x1 nil))
+_ = refl
+
+from : Bin → ℕ
+from nil = zero
+from (x0 nil) = zero
+from (x1 nil) = suc zero
+from (x0 b) = suc (from b)
+from (x1 b) = suc (suc (from b))
+
+_ : from (x0 nil) ≡ 0
+_ = refl
+_ : from (x1 nil) ≡ 1
+_ = refl
+_ : from (x0 (x1 nil)) ≡ 2
+_ = refl
+_ : from (x1 (x1 nil)) ≡ 3
+_ = refl
+_ : from (x0 (x1 (x1 nil))) ≡ 4
+_ = refl
 ```
 
 

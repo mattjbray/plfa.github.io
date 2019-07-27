@@ -76,6 +76,20 @@ that a newly introduced operator is associative but not commutative.
 Give another example of a pair of operators that have an identity
 and are associative, commutative, and distribute over one another.
 
+and:
+- identity:      `false ̌∧ b ≡ false`, `b ∧ false ≡ false`
+- associativity: `(m ∧ n) ∧ p ≡ m ∧ (n ∧ p)`
+- commutativity: `m ∧ n ̄≡ n ∧ m`
+or
+- identity:      `true ̌∨ b ≡ true`, `b ∨ true ≡ true`
+- associativity: `(m ∨ n) ∨ p ≡ m ∨ (n ∨ p)`
+- commutativity: `m ∨ n ̄≡ n ∨ m`
+
+distribute:
+left:  `(m ∨ n) ∧ p ≡ (m ∧ p) ∨ (n ∧ p)`
+right: `m ∧ (p ∨ q) ≡ (m ∧ p) ∨ (m ∧ q)`
+
+
 Give an example of an operator that has an identity and is
 associative but is not commutative.
 
@@ -707,6 +721,53 @@ first four days using a finite story of creation, as
 -- Your code goes here
 ```
 
+    +-assoc zero:
+    n : ℕ
+    p : ℕ
+    ------------------------------
+    (zero + n) + p ≡ zero + (n + p)
+
+    +-assoc succ:
+    (m + n) + p ≡ m + (n + p)
+    ------------------------------
+    (suc m + n) + p ≡ suc m + (n + p)
+
+    -- In the beginning, we know nothing.
+
+    -- On the first day:
+    0 : ℕ
+
+    -- On the second day:
+    0 : ℕ
+    1 : ℕ   +-assoc zero 0 0 : (0 + 0) + 0 ≡ 0 + (0 + 0)
+
+    -- On the third day:
+    0 : ℕ
+    1 : ℕ   +-assoc zero 0 0 : (0 + 0) + 0 ≡ 0 + (0 + 0)
+    2 : ℕ   +-assoc zero 1 0 (0 + 1) + 0 ≡ 0 + (1 + 0)
+            +-assoc zero 0 1 (0 + 0) + 1 ≡ 0 + (0 + 1)
+            +-assoc zero 1 1 (0 + 1) + 1 ≡ 0 + (1 + 1)
+            +-assoc succ     (1 + 0) + 0 ≡ 1 + (0 + 0)
+
+    -- On the fourth day:
+    0 : ℕ
+    1 : ℕ   +-assoc zero 0 0 : (0 + 0) + 0 ≡ 0 + (0 + 0)
+    2 : ℕ   +-assoc succ     (1 + 0) + 0 ≡ 1 + (0 + 0)
+            +-assoc zero 1 0 (0 + 1) + 0 ≡ 0 + (1 + 0)
+            +-assoc zero 0 1 (0 + 0) + 1 ≡ 0 + (0 + 1)
+            +-assoc zero 1 1 (0 + 1) + 1 ≡ 0 + (1 + 1)
+    3 : ℕ   +-assoc succ     (2 + 0) + 0 ≡ 2 + (0 + 0)
+            +-assoc succ     (1 + 1) + 0 ≡ 1 + (1 + 0)
+            +-assoc succ     (1 + 0) + 1 ≡ 1 + (0 + 1)
+            +-assoc succ     (1 + 1) + 1 ≡ 1 + (1 + 1)
+            +-assoc zero 2 0 (0 + 2) + 0 ≡ 0 + (2 + 0)
+            +-assoc zero 2 1 (0 + 2) + 1 ≡ 0 + (2 + 1)
+            +-assoc zero 2 2 (0 + 2) + 2 ≡ 0 + (2 + 2)
+            +-assoc zero 1 2 (0 + 1) + 2 ≡ 0 + (1 + 2)
+            +-assoc zero 0 2 (0 + 0) + 2 ≡ 0 + (0 + 2)
+
+
+
 ## Associativity with rewrite
 
 There is more than one way to skin a cat.  Here is a second proof of
@@ -871,6 +932,8 @@ is associative and commutative.
 
 ```
 -- Your code goes here
++-swap : ∀ (m n p : ℕ) → m + (n + p) ≡ n + (m + p)
++-swap m n p rewrite sym (+-assoc m n p) | +-comm m n | +-assoc n m p = refl
 ```
 
 
@@ -884,6 +947,9 @@ for all naturals `m`, `n`, and `p`.
 
 ```
 -- Your code goes here
+*-distrib-+ : ∀ ( m n p : ℕ) → (m + n) * p ≡ m * p + n * p
+*-distrib-+ zero n p = refl
+*-distrib-+ (suc m) n p rewrite *-distrib-+ m n p | +-assoc p (m * p) (n * p) = refl
 ```
 
 
@@ -897,6 +963,9 @@ for all naturals `m`, `n`, and `p`.
 
 ```
 -- Your code goes here
+*-assoc : ∀ (m n p : ℕ) → (m * n) * p ≡ m * (n * p)
+*-assoc zero n p = refl
+*-assoc (suc m) n p rewrite *-distrib-+ n (m * n) p | *-assoc m n p = refl
 ```
 
 
@@ -911,6 +980,18 @@ you will need to formulate and prove suitable lemmas.
 
 ```
 -- Your code goes here
+
+*-zeroʳ : ∀ (m : ℕ) → m * 0 ≡ 0
+*-zeroʳ zero = refl
+*-zeroʳ (suc m) rewrite *-zeroʳ m = refl
+
+*-suc : ∀ (m n : ℕ) → n * suc m ≡ n + m * n
+*-suc zero n = {!!}
+*-suc (suc m) n = {!!}
+
+*-comm : ∀ (m n : ℕ) → m * n ≡ n * m
+*-comm zero n rewrite *-zeroʳ n = refl
+*-comm (suc m) n = {!!}
 ```
 
 
