@@ -991,14 +991,33 @@ you will need to formulate and prove suitable lemmas.
 
 *-distrib-+ʳ : ∀ ( m p q : ℕ) → m * (p + q) ≡ m * p + m * q
 *-distrib-+ʳ zero p q = refl
-*-distrib-+ʳ (suc m) p q
-  rewrite *-distrib-+ʳ m p q
-  | sym (+-assoc (p + q) (m * p) (m * q))
-  | +-assoc p q (m * p)
-  | +-comm q (m * p)
-  | sym (+-assoc p (m * p) q)
-  | +-assoc (p + m * p) q (m * q)
-  = refl
+*-distrib-+ʳ (suc m) p q =
+  begin
+    suc m * (p + q)
+  ≡⟨⟩
+    (p + q) + m * (p + q)
+  ≡⟨ cong ((p + q) +_) (*-distrib-+ʳ m p q) ⟩
+    (p + q) + (m * p + m * q)
+  ≡⟨ sym (+-assoc (p + q) (m * p) (m * q)) ⟩
+    p + q + m * p + m * q
+  ≡⟨ cong (_+ m * q) (+-assoc p q (m * p)) ⟩
+    p + (q + m * p) + m * q
+  ≡⟨ cong (\t -> p + t + m * q) (+-comm q (m * p)) ⟩
+    p + (m * p + q) + m * q
+  ≡⟨ cong (_+ m * q) (sym (+-assoc p (m * p) q))⟩
+    p + m * p + q + m * q
+  ≡⟨ +-assoc (p + m * p) q (m * q) ⟩
+    (p + m * p) + (q + m * q)
+  ≡⟨⟩
+    suc m * p + suc m * q
+  ∎
+  -- rewrite *-distrib-+ʳ m p q
+  -- | sym (+-assoc (p + q) (m * p) (m * q))
+  -- | +-assoc p q (m * p)
+  -- | +-comm q (m * p)
+  -- | sym (+-assoc p (m * p) q)
+  -- | +-assoc (p + m * p) q (m * q)
+  -- = refl
 
 *-comm : ∀ (m n : ℕ) → m * n ≡ n * m
 *-comm zero n rewrite *-zeroʳ n = refl
