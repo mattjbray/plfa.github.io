@@ -985,13 +985,36 @@ you will need to formulate and prove suitable lemmas.
 *-zeroʳ zero = refl
 *-zeroʳ (suc m) rewrite *-zeroʳ m = refl
 
-*-suc : ∀ (m n : ℕ) → n * suc m ≡ n + m * n
-*-suc zero n = {!!}
-*-suc (suc m) n = {!!}
+*-identityʳ : ∀ (m : ℕ) → m * 1 ≡ m
+*-identityʳ zero = refl
+*-identityʳ (suc m) rewrite *-identityʳ m = refl
+
+*-distrib-+ʳ : ∀ ( m p q : ℕ) → m * (p + q) ≡ m * p + m * q
+*-distrib-+ʳ zero p q = refl
+*-distrib-+ʳ (suc m) p q
+  rewrite *-distrib-+ʳ m p q
+  | sym (+-assoc (p + q) (m * p) (m * q))
+  | +-assoc p q (m * p)
+  | +-comm q (m * p)
+  | sym (+-assoc p (m * p) q)
+  | +-assoc (p + m * p) q (m * q)
+  = refl
 
 *-comm : ∀ (m n : ℕ) → m * n ≡ n * m
 *-comm zero n rewrite *-zeroʳ n = refl
-*-comm (suc m) n = {!!}
+*-comm (suc m) n = begin
+    suc m * n
+  ≡⟨⟩
+    n + m * n
+  ≡⟨ cong (n +_) (*-comm m n) ⟩
+    n + n * m
+  ≡⟨ cong (_+ n * m) (sym (*-identityʳ n)) ⟩
+    n * 1 + n * m
+  ≡⟨ sym (*-distrib-+ʳ n 1 m) ⟩
+    n * (1 + m)
+  ≡⟨⟩
+    n * suc m
+  ∎
 ```
 
 
