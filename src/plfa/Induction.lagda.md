@@ -1079,6 +1079,42 @@ Show the following three laws
     m ^ (n * p) ≡ (m ^ n) ^ p
 
 for all `m`, `n`, and `p`.
+```
+open import Data.Nat using (_^_)
+
+^-distrib-+* : ∀ (m n p : ℕ) → m ^ (n + p) ≡ (m ^ n) * (m ^ p)
+^-distrib-+* m zero p rewrite +-identityʳ (m ^ p) = refl
+^-distrib-+* m (suc n) p rewrite ^-distrib-+* m n p | *-assoc m (m ^ n) (m ^ p) = refl
+
+
+^-distrib-* : ∀ (m n p : ℕ) → (m * n) ^ p ≡ (m ^ p) * (n ^ p)
+^-distrib-* m n zero = refl
+^-distrib-* m n (suc p)
+  rewrite sym (*-assoc (m * (m ^ p)) n (n ^ p))
+  | *-assoc m (m ^ p) n
+  | *-comm (m ^ p) n
+  | sym (*-assoc m n (m ^ p))
+  | *-assoc (m * n) (m ^ p) (n ^ p)
+  | ^-distrib-* m n p
+  = refl
+
+*-suc : ∀ (m n : ℕ) → m * suc n ≡ m + m * n
+*-suc zero n = refl
+*-suc (suc m) n
+  rewrite sym (+-assoc m n (m * n))
+  | +-comm m n
+  | +-assoc n m (m * n)
+  | *-suc m n
+  = refl
+
+^-smth-* : ∀ (m n p : ℕ) → m ^ (n * p) ≡ (m ^ n) ^ p
+^-smth-* m n zero rewrite *-zeroʳ n = refl
+^-smth-* m n (suc p)
+  rewrite *-suc n p
+  | ^-distrib-+* m n (n * p)
+  | ^-smth-* m n p
+  = refl
+```
 
 
 #### Exercise `Bin-laws` (stretch) {#Bin-laws}
