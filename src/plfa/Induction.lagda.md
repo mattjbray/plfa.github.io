@@ -1047,6 +1047,9 @@ for all naturals `n`. Did your proof require induction?
 
 ```
 -- Your code goes here
+∸-zero : ∀ (n : ℕ) → zero ∸ n ≡ zero
+∸-zero zero = refl
+∸-zero (suc n) = refl
 ```
 
 
