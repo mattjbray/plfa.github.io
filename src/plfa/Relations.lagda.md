@@ -669,6 +669,19 @@ similar to that used for totality.
 
 ```
 -- Your code goes here
+data Trichotomy (m n : ℕ) : Set where
+  m<n : m < n → Trichotomy m n
+  m≡n : m ≡ n → Trichotomy m n
+  m>n : n < m → Trichotomy m n
+
+<-trichotomy : ∀ (m n : ℕ) → Trichotomy m n
+<-trichotomy zero zero = m≡n refl
+<-trichotomy zero (suc n) = m<n z<s
+<-trichotomy (suc m) zero = m>n z<s
+<-trichotomy (suc m) (suc n) with <-trichotomy m n
+...                        | m<n x = m<n (s<s x)
+...                        | m>n x = m>n (s<s x)
+...                        | m≡n x = m≡n (cong suc x)
 ```
 
 #### Exercise `+-mono-<` {#plus-mono-less}
