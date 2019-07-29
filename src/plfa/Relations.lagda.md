@@ -616,41 +616,6 @@ Show that strict inequality is transitive.
   → m < p
 <-trans z<s (s<s y) = z<s
 <-trans (s<s m<n) (s<s n<p) = s<s (<-trans m<n n<p)
-
--- alternative defn in terms of ≤-trans:
-
-suc-≤-< : ∀ {m n : ℕ}
-  → suc m ≤ n
-  -----------
-  → m < n
-suc-≤-< {zero} {suc _} (s≤s _) = z<s
-suc-≤-< {suc m} {suc n} (s≤s sm≤n) = s<s (suc-≤-< sm≤n)
-
-<-suc-≤ : ∀ {m n : ℕ}
-  → m < n
-  -----------
-  → suc m ≤ n
-<-suc-≤ {zero} {suc n} m<n = s≤s z≤n
-<-suc-≤ {suc m} {suc n} (s<s m<n) = s≤s (<-suc-≤ m<n)
-
-n≤sn : ∀ {n : ℕ} → n ≤ suc n
-n≤sn {zero} = z≤n
-n≤sn {suc n} = s≤s n≤sn
-
-<-trans' : ∀ {m n p : ℕ}
-  → m < n
-  → n < p
-  -------
-  → m < p
-<-trans' {m} {n} {p} m<n n<p = suc-≤-< sm≤p
-  where sm≤n : suc m ≤ n
-        sm≤n = <-suc-≤ m<n
-        sm≤sn : suc m ≤ suc n
-        sm≤sn = ≤-trans sm≤n n≤sn
-        sn≤p : suc n ≤ p
-        sn≤p = <-suc-≤ n<p
-        sm≤p : suc m ≤ p
-        sm≤p = ≤-trans sm≤sn sn≤p
 ```
 
 #### Exercise `trichotomy` {#trichotomy}
@@ -670,18 +635,18 @@ similar to that used for totality.
 ```
 -- Your code goes here
 data Trichotomy (m n : ℕ) : Set where
-  m<n : m < n → Trichotomy m n
-  m≡n : m ≡ n → Trichotomy m n
-  m>n : n < m → Trichotomy m n
+  t-m<n : m < n → Trichotomy m n
+  t-m≡n : m ≡ n → Trichotomy m n
+  t-m>n : n < m → Trichotomy m n
 
 <-trichotomy : ∀ (m n : ℕ) → Trichotomy m n
-<-trichotomy zero zero = m≡n refl
-<-trichotomy zero (suc n) = m<n z<s
-<-trichotomy (suc m) zero = m>n z<s
+<-trichotomy zero zero = t-m≡n refl
+<-trichotomy zero (suc n) = t-m<n z<s
+<-trichotomy (suc m) zero = t-m>n z<s
 <-trichotomy (suc m) (suc n) with <-trichotomy m n
-...                        | m<n x = m<n (s<s x)
-...                        | m>n x = m>n (s<s x)
-...                        | m≡n x = m≡n (cong suc x)
+...                        | t-m<n x = t-m<n (s<s x)
+...                        | t-m>n x = t-m>n (s<s x)
+...                        | t-m≡n x = t-m≡n (cong suc x)
 ```
 
 #### Exercise `+-mono-<` {#plus-mono-less}
@@ -699,6 +664,20 @@ Show that `suc m ≤ n` implies `m < n`, and conversely.
 
 ```
 -- Your code goes here
+
+≤-iff-< : ∀ {m n : ℕ}
+  → suc m ≤ n
+    ---------
+  → m < n
+≤-iff-< {zero} {suc _} (s≤s _) = z<s
+≤-iff-< {suc m} {suc n} (s≤s sm≤n) = s<s (≤-iff-< sm≤n)
+
+<-iff-≤ : ∀ {m n : ℕ}
+  → m < n
+    ---------
+  → suc m ≤ n
+<-iff-≤ {zero} {suc n} z<s = s≤s z≤n
+<-iff-≤ {suc m} {suc n} (s<s m<n) = s≤s (<-iff-≤ m<n)
 ```
 
 #### Exercise `<-trans-revisited` {#less-trans-revisited}
@@ -709,6 +688,26 @@ the fact that inequality is transitive.
 
 ```
 -- Your code goes here
+
+n≤sn : ∀ {n : ℕ} → n ≤ suc n
+n≤sn {zero} = z≤n
+n≤sn {suc n} = s≤s n≤sn
+
+<-trans' : ∀ {m n p : ℕ}
+  → m < n
+  → n < p
+    -----
+  → m < p
+<-trans' {m} {n} {p} m<n n<p = ≤-iff-< sm≤p
+  where
+  sm≤n : suc m ≤ n
+  sm≤n = <-iff-≤ m<n
+  sm≤sn : suc m ≤ suc n
+  sm≤sn = ≤-trans sm≤n n≤sn
+  sn≤p : suc n ≤ p
+  sn≤p = <-iff-≤ n<p
+  sm≤p : suc m ≤ p
+  sm≤p = ≤-trans sm≤sn sn≤p
 ```
 
 
