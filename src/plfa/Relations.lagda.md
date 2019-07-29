@@ -608,6 +608,49 @@ Show that strict inequality is transitive.
 
 ```
 -- Your code goes here
+
+<-trans : ∀ {m n p : ℕ}
+  → m < n
+  → n < p
+    -----
+  → m < p
+<-trans z<s (s<s y) = z<s
+<-trans (s<s m<n) (s<s n<p) = s<s (<-trans m<n n<p)
+
+-- alternative defn in terms of ≤-trans:
+
+suc-≤-< : ∀ {m n : ℕ}
+  → suc m ≤ n
+  -----------
+  → m < n
+suc-≤-< {zero} {suc _} (s≤s _) = z<s
+suc-≤-< {suc m} {suc n} (s≤s sm≤n) = s<s (suc-≤-< sm≤n)
+
+<-suc-≤ : ∀ {m n : ℕ}
+  → m < n
+  -----------
+  → suc m ≤ n
+<-suc-≤ {zero} {suc n} m<n = s≤s z≤n
+<-suc-≤ {suc m} {suc n} (s<s m<n) = s≤s (<-suc-≤ m<n)
+
+n≤sn : ∀ {n : ℕ} → n ≤ suc n
+n≤sn {zero} = z≤n
+n≤sn {suc n} = s≤s n≤sn
+
+<-trans' : ∀ {m n p : ℕ}
+  → m < n
+  → n < p
+  -------
+  → m < p
+<-trans' {m} {n} {p} m<n n<p = suc-≤-< sm≤p
+  where sm≤n : suc m ≤ n
+        sm≤n = <-suc-≤ m<n
+        sm≤sn : suc m ≤ suc n
+        sm≤sn = ≤-trans sm≤n n≤sn
+        sn≤p : suc n ≤ p
+        sn≤p = <-suc-≤ n<p
+        sm≤p : suc m ≤ p
+        sm≤p = ≤-trans sm≤sn sn≤p
 ```
 
 #### Exercise `trichotomy` {#trichotomy}
