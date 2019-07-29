@@ -1015,10 +1015,8 @@ _ = refl
 
 from : Bin → ℕ
 from nil = zero
-from (x0 nil) = zero
-from (x1 nil) = suc zero
-from (x0 b) = suc (from b)
-from (x1 b) = suc (suc (from b))
+from (x0 b) = 2 * from b
+from (x1 b) = suc (2 * from b)
 
 _ : from (x0 nil) ≡ 0
 _ = refl
@@ -1028,7 +1026,7 @@ _ : from (x0 (x1 nil)) ≡ 2
 _ = refl
 _ : from (x1 (x1 nil)) ≡ 3
 _ = refl
-_ : from (x0 (x1 (x1 nil))) ≡ 4
+_ : from (x0 (x0 (x1 nil))) ≡ 4
 _ = refl
 ```
 

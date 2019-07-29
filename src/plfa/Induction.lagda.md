@@ -1145,6 +1145,46 @@ For each law: if it holds, prove; if not, give a counterexample.
 
 ```
 -- Your code goes here
+inc : Bin → Bin
+inc nil = x1 nil
+inc (x0 b) = x1 b
+inc (x1 b) = x0 (inc b)
+
+to : ℕ → Bin
+to zero = x0 nil
+to (suc n) = inc (to n)
+
+from : Bin → ℕ
+from nil = zero
+from (x0 b) = 2 * from b
+from (x1 b) = suc (2 * from b)
+
+from-inc-suc : ∀ (x : Bin) → from (inc x) ≡ suc (from x)
+from-inc-suc nil = refl
+from-inc-suc (x0 b) = refl
+from-inc-suc (x1 b) rewrite
+    +-identityʳ (from (inc b))
+  | +-identityʳ (from b)
+  | from-inc-suc b
+  | +-comm (from b) (suc (from b))
+  = refl
+
+-- Counterexample to `to (from x) ≡ x`
+_ : to (from (x1 (x0 nil))) ≡ x1 nil
+_ = refl
+
+from-to-id : ∀ (n : ℕ) → from (to n) ≡ n
+from-to-id zero = refl
+from-to-id (suc n) rewrite from-inc-suc (to n) | from-to-id n = refl
+  -- begin
+  --   from (to (suc n))
+  -- ≡⟨⟩
+  --   from (inc (to n))
+  -- ≡⟨ from-inc-suc (to n) ⟩
+  --   suc (from (to n))
+  -- ≡⟨ cong suc (from-to-id n) ⟩
+  --   suc n
+  -- ∎
 ```
 
 
