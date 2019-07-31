@@ -2,7 +2,7 @@
 open Naturals;;
 
 let plus_assoc m n p =
-  Nat.((m + n) + p = m + (n + p))
+  Nat.(m + (n + p) = (m + n) + p)
 [@@imandra_theorem][@@auto][@@rw]
 
 let plus_identity_right m =
@@ -14,8 +14,8 @@ let plus_suc m n =
 [@@imandra_theorem][@@auto][@@rw]
 
 let plus_comm m n =
-  Nat.(m + n = n + m)
-[@@imandra_theorem][@@auto]
+  Nat.((m + n)[@trigger] = n + m)
+[@@imandra_theorem][@@auto][@@fc]
 
 let plus_rearrange m n p q =
   Nat.(
@@ -23,13 +23,168 @@ let plus_rearrange m n p q =
   )
 [@@imandra_theorem][@@auto]
 
+(**
+   #### Exercise `+-swap` (recommended) {#plus-swap}
+
+   Show
+
+    m + (n + p) ≡ n + (m + p)
+
+   for all naturals `m`, `n`, and `p`. No induction is needed,
+   just apply the previous results which show addition
+   is associative and commutative.
+*)
 
 let plus_swap m n p =
   Nat.(
     m + (n + p) = n + (m + p)
   )
+[@@imandra_theorem][@@auto]
+
+(**
+   #### Exercise `*-distrib-+` (recommended) {#times-distrib-plus}
+
+   Show multiplication distributes over addition, that is,
+
+    (m + n) * p ≡ m * p + n * p
+
+   for all naturals `m`, `n`, and `p`.
+*)
+
+let mul_distrib_plus m n p =
+  Nat.(
+    (m + n) * p = m * p + n * p
+  )
 [@@imandra_theorem]
-[@@apply plus_assoc m n p]
-[@@apply plus_comm m n]
-[@@apply plus_assoc n m p]
+[@@auto][@@rw]
+
+(**
+   #### Exercise `*-assoc` (recommended) {#times-assoc}
+
+   Show multiplication is associative, that is,
+
+    (m * n) * p ≡ m * (n * p)
+
+   for all naturals `m`, `n`, and `p`.
+*)
+
+let mul_assoc m n p =
+  Nat.(
+    m * (n * p) = (m * n) * p
+  )
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+(**
+   #### Exercise `*-comm` {#times-comm}
+
+   Show multiplication is commutative, that is,
+
+    m * n ≡ n * m
+
+   for all naturals `m` and `n`.  As with commutativity of addition,
+   you will need to formulate and prove suitable lemmas.
+*)
+
+let mul_zero_right m =
+  Nat.(
+    m * Zero = Zero
+  )
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+let mul_suc m n =
+  Nat.(
+    m * Suc n = m + (m * n)
+  )
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+let mul_comm m n =
+  Nat.(
+    (m * n)[@trigger] = n * m
+  )
+[@@imandra_theorem]
+[@@auto][@@fc]
+
+(**
+   #### Exercise `0∸n≡0` {#zero-monus}
+
+   Show
+
+    zero ∸ n ≡ zero
+
+   for all naturals `n`. Did your proof require induction?
+*)
+
+let monus_zero_left n =
+  Nat.(
+    Zero -. n = Zero
+  )
+[@@imandra_theorem][@@rw]
+
+(**
+   #### Exercise `∸-|-assoc` {#monus-plus-assoc}
+
+   Show that monus associates with addition, that is,
+
+    m ∸ n ∸ p ≡ m ∸ (n + p)
+
+   for all naturals `m`, `n`, and `p`.
+*)
+
+let monus_plus_assoc m n p =
+  Nat.(
+    m -. n -. p = m -. (n + p)
+  )
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+(**
+   #### Exercise `+*^` (stretch)
+
+   Show the following three laws
+
+    m ^ (n + p) ≡ (m ^ n) * (m ^ p)
+    (m * n) ^ p ≡ (m ^ p) * (n ^ p)
+    m ^ (n * p) ≡ (m ^ n) ^ p
+
+   for all `m`, `n`, and `p`.
+*)
+
+let law_1 m n p =
+  Nat.(
+    m ^ (n + p) = (m ^ n) * (m ^ p)
+  )
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+let mul_swap m n p q =
+  Nat.(
+    ((m * n) * p) * q = ((m * p) * n) * q
+  )
+[@@imandra_theorem]
 [@@auto]
+
+(* how to apply mul_swap to the subgoal in law_2? *)
+
+let law_2 m n p =
+  Nat.(
+    (m * n) ^ p = (m ^ p) * (n ^ p)
+  )
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+let pow_one n =
+  Nat.(
+    Suc Zero ^ n = Suc Zero
+  )
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+let law_3 m n p =
+  Nat.(
+    m ^ (n * p) = (m ^ n) ^ p
+  )
+[@@imandra_theorem]
+[@@auto][@@rw]
