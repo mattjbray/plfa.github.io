@@ -1,0 +1,205 @@
+module Nat = struct
+  type t =
+    | Zero
+    | Suc of t
+
+  let zero = Zero
+  let suc t = Suc t
+
+  let one = suc zero
+  let two = suc one
+  let three = suc two
+  let four = suc three
+  let five = suc four
+  let six = suc five
+  let seven = suc six
+  let eight = suc seven
+  let nine = suc eight
+  let ten = suc nine
+  let eleven = suc ten
+  let twelve = suc eleven
+
+  let rec of_z (x : int) : t =
+    if x <= 0 then
+      zero
+    else
+      suc (of_z (x - 1))
+
+  let rec (+) t1 t2 =
+    match t1 with
+    | Zero -> t2
+    | Suc t1' -> suc (t1' + t2)
+
+  let rec ( * ) m n =
+    match m with
+    | Zero -> zero
+    | Suc m -> n + (m * n)
+
+  let rec ( ^ ) m n =
+    match n with
+    | Zero -> suc zero
+    | Suc n -> m * (m ^ n)
+
+  let rec ( -. ) m n =
+    match m, n with
+    | m, Zero -> m
+    | Zero, Suc n -> Zero
+    | Suc m, Suc n -> m -. n
+end
+open Nat
+;;
+
+
+(** #### Exercise `seven` {#seven}
+    Write out `7` in longhand.
+*)
+let _ =
+  suc (suc (suc (suc (suc (suc (suc zero))))))
+;;
+
+(** #### Exercise `+-example` {#plus-example}
+
+    Compute `3 + 4`, writing out your reasoning as a chain of equations.
+*)
+
+[@@@redef true];;
+
+let begin_ x = (true, x)
+let (=<>) (b, x) y = (b && x = y, y)
+let qed (b, x) = b
+;;
+
+verify (fun _ ->
+    begin_ (three + four)
+    =<> suc (two + four)
+    =<> suc (suc (one + four))
+    =<> suc (suc (suc (zero + four)))
+    =<> suc (suc (suc four))
+    =<> seven
+    |> qed
+  );;
+
+(** #### Exercise `*-example` {#times-example}
+
+    Compute `3 * 4`, writing out your reasoning as a chain of equations.
+*)
+
+verify (fun _ ->
+    begin_ (three * four)
+    =<> suc two * four
+    =<> four + (two * four)
+    =<> four + (suc one * four)
+    =<> four + (four + (one * four))
+    =<> four + (four + (suc zero * four))
+    =<> four + (four + (four + (zero * four)))
+    =<> four + (four + (four + zero))
+    =<> twelve
+    |> qed
+  );;
+
+(** #### Exercise `_^_` (recommended) {#power}
+
+    Define exponentiation, which is given by the following equations:
+
+    m ^ 0        =  1
+    m ^ (1 + n)  =  m * (m ^ n)
+
+    Check that `3 ^ 4` is `81`.
+*)
+
+verify (fun _ ->
+    begin_ (three ^ four)
+    =<> three * (three ^ three)
+    =<> three * (three * (three ^ two))
+    =<> three * (three * (three * (three ^ one)))
+    =<> three * (three * (three * (three * (three ^ zero))))
+    =<> three * (three * (three * (three * one)))
+    =<> of_z 81
+    |> qed
+  )[@@blast];;
+
+
+(** #### Exercise `∸-examples` (recommended) {#monus-examples}
+
+    Compute `5 ∸ 3` and `3 ∸ 5`, writing out your reasoning as a chain of equations.
+*)
+
+verify (fun _ ->
+    begin_ (five -. three)
+    =<> four -. two
+    =<> three -. one
+    =<> two -. zero
+    =<> two
+    |> qed
+  )[@@blast];;
+
+verify (fun _ ->
+    begin_ (three -. five)
+    =<> two -. four
+    =<> one -. three
+    =<> zero -. two
+    =<> zero
+    |> qed
+  )[@@blast];;
+
+(** #### Exercise `Bin` (stretch) {#Bin}
+*)
+
+module Bin = struct
+  type t =
+    | Nil
+    | X0 of t
+    | X1 of t
+
+  let nil = Nil
+  let x0 t = X0 t
+  let x1 t = X1 t
+
+  let rec inc = function
+    | Nil -> x1 nil
+    | X0 b -> x1 b
+    | X1 b -> x0 (inc b)
+
+  let rec to_ : Nat.t -> t = function
+    | Zero -> x0 nil
+    | Suc n -> inc (to_ n)
+
+  let rec from : t -> Nat.t = function
+    | Nil -> Nat.zero
+    | X0 t -> Nat.(two * from t)
+    | X1 t -> Nat.(suc (two * from t))
+end
+open Bin;;
+
+(* inc 0 = 1*)
+verify (fun _ -> inc (x0 nil) = x1 nil);;
+(* inc 1 = 10 *)
+verify (fun _ -> inc (x1 nil) = x0 (x1 nil));;
+(* inc 10 = 11 *)
+verify (fun _ -> inc (x0 (x1 nil)) = x1 (x1 nil));;
+(* inc 11 = 100 *)
+verify (fun _ -> inc (x1 (x1 nil)) = x0 (x0 (x1 nil)));;
+(* inc 100 = 101 *)
+verify (fun _ -> inc (x0 (x0 (x1 nil))) = x1 (x0 (x1 nil)));;
+
+(* to 0 = 0 *)
+verify (fun _ -> to_ zero = x0 nil);;
+(* to 1 = 1 *)
+verify (fun _ -> to_ one = x1 nil);;
+(* to 2 = 10 *)
+verify (fun _ -> to_ two = x0 (x1 nil));;
+(* to 3 = 11 *)
+verify (fun _ -> to_ three = x1 (x1 nil));;
+(* to 4 = 100 *)
+verify (fun _ -> to_ four = x0 (x0 (x1 nil)));;
+
+(* from 0 = 0 *)
+verify (fun _ -> from (x0 nil) = zero);;
+(* from 1 = 1 *)
+verify (fun _ -> from (x1 nil) = one);;
+(* from 10 = 2 *)
+verify (fun _ -> from (x0 (x1 nil)) = two);;
+(* from 11 = 3 *)
+verify (fun _ -> from (x1 (x1 nil)) = three);;
+(* from 100 = 4 *)
+verify (fun _ -> from (x0 (x0 (x1 nil))) = four);;

@@ -1,0 +1,35 @@
+[@@@import "./Naturals.iml"];;
+open Naturals;;
+
+let plus_assoc m n p =
+  Nat.((m + n) + p = m + (n + p))
+[@@imandra_theorem][@@auto][@@rw]
+
+let plus_identity_right m =
+  Nat.(m + Zero = m)
+[@@imandra_theorem][@@auto][@@rw]
+
+let plus_suc m n =
+  Nat.(m + Suc n = Suc (m + n))
+[@@imandra_theorem][@@auto][@@rw]
+
+let plus_comm m n =
+  Nat.(m + n = n + m)
+[@@imandra_theorem][@@auto]
+
+let plus_rearrange m n p q =
+  Nat.(
+    (m + n) + (p + q) = m + (n + p) + q
+  )
+[@@imandra_theorem][@@auto]
+
+
+let plus_swap m n p =
+  Nat.(
+    m + (n + p) = n + (m + p)
+  )
+[@@imandra_theorem]
+[@@apply plus_assoc m n p]
+[@@apply plus_comm m n]
+[@@apply plus_assoc n m p]
+[@@auto]
