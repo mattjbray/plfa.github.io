@@ -1,0 +1,296 @@
+[@@@reset];;
+Imandra.reset_imported_files();;
+[@@@redef true];;
+[@@@max_induct 2i];;
+[@@@import "./Naturals.iml"];;
+[@@@import "./Induction.iml"];;
+[@@@max_induct 1i];;
+open Naturals;;
+
+module Leq = struct
+  open Nat
+
+  let rec (<=) m n =
+    match m, n with
+    | Zero, n -> true
+    | Suc m, Suc n -> m <= n
+    | _ -> false
+end
+
+let inv_leq_suc m n =
+  Leq.(
+    Suc m <= Suc n
+    ==>
+    m <= n
+  )
+[@@imandra_theorem]
+
+let inv_leq_zero m n =
+  Leq.(
+    m <= Zero
+    ==>
+    m = Zero
+  )
+[@@imandra_theorem]
+
+let leq_refl n =
+  Leq.(n <= n)
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+let leq_trans m n p =
+  Leq.(
+    m <= n && n <= p
+    ==>
+    m <= p
+  )
+[@@imandra_theorem]
+[@@auto][@@fc]
+
+let leq_antisym m n =
+  Leq.(
+    m <= n && n <= m
+    ==>
+    m = n
+  )
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+let leq_total m n =
+  Leq.(
+    if m = n then
+      m <= n && n <= m
+    else
+      m <= n || n <= m
+  )
+[@@imandra_theorem]
+[@@auto]
+
+let plus_mono_leq_right n p q =
+  Nat.(Leq.(
+    p <= q
+    ==>
+    n + p <= n + q
+  ))
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+let n_lt_suc_n n =
+  Nat.(Leq.(
+      n <= Suc n
+    ))
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+let lt_implies_lt_suc m n =
+  Nat.(Leq.(
+      m <= n
+      ==>
+      m <= Suc n
+    ))
+[@@imandra_theorem]
+[@@auto][@@rw];;
+
+let m_lt_n_plus_m m n =
+  Nat.(Leq.(
+      m <= n + m
+    ))
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+let plus_mono_leq_left m n p =
+  Nat.(Leq.(
+    m <= n
+    ==>
+    m + p <= n + p
+  ))
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+let plus_mono_leq m n p q =
+  Nat.(Leq.(
+    m <= n && p <= q
+    ==>
+    m + p <= n + q
+  ))
+[@@imandra_theorem]
+[@@auto]
+[@@apply plus_mono_leq_left m n p]
+[@@apply plus_mono_leq_right n p q]
+[@@rw]
+
+(**
+   #### Exercise `*-mono-≤` (stretch)
+
+   Show that multiplication is monotonic with regard to inequality.
+*)
+
+let mul_mono_leq_right n p q =
+  Nat.(Leq.(
+    p <= q
+    ==>
+    n * p <= n * q
+  ))
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+let mul_mono_leq_left m n p =
+  Nat.(Leq.(
+    m <= n
+    ==>
+    m * p <= n * p
+  ))
+[@@imandra_theorem]
+[@@auto][@@rw]
+
+let mul_mono_leq m n p q =
+  Nat.(Leq.(
+    m <= n &&
+    p <= q
+    ==>
+    m * p <= n * q
+  ))
+[@@imandra_theorem]
+[@@auto][@@rw]
+[@@apply mul_mono_leq_left m n p]
+[@@apply mul_mono_leq_right n p q]
+
+(* TODO from here *)
+
+module Lt = struct
+  open Nat
+
+  let (<) m n =
+    match m, n with
+    | Zero, Suc n -> true
+    | Suc m, Suc n -> m < n
+    | _ -> false
+end
+;;
+
+(**
+   #### Exercise `<-trans` (recommended) {#less-trans}
+
+   Show that strict inequality is transitive.
+*)
+
+let lt_trans m n p =
+  Lt.(
+    m < n &&
+    n < p
+    ==>
+    m < p
+  )
+[@@imandra_theorem]
+
+(**
+   #### Exercise `trichotomy` {#trichotomy}
+
+   Show that strict inequality satisfies a weak version of trichotomy, in
+   the sense that for any `m` and `n` that one of the following holds:
+  * `m < n`,
+  * `m ≡ n`, or
+  * `m > n`.
+*)
+
+let lt_trichotomy m n =
+  m < n || m = n || n < m
+[@@imandra_theorem]
+
+(**
+   #### Exercise `+-mono-<` {#plus-mono-less}
+
+   Show that addition is monotonic with respect to strict inequality.
+   As with inequality, some additional definitions may be required.
+*)
+
+let plus_mono_lt_right n p q =
+  Lt.(
+    p < q
+    ==>
+    n + p < n + q
+  )
+[@@imandra_theorem]
+
+let plus_mono_lt_left m n p =
+  Lt.(
+    m < n
+    ==>
+    m + p < n + p
+  )
+[@@imandra_theorem]
+
+let plus_mono_lt m n p q =
+  Lt.(
+    m < n &&
+    p < q
+    ==>
+    m + p < n + q
+  )
+[@@imandra_theorem]
+
+(**
+   #### Exercise `≤-iff-<` (recommended) {#leq-iff-less}
+
+   Show that `suc m ≤ n` implies `m < n`, and conversely.
+*)
+
+let leq_iff_lt m n =
+  Lt.(
+    Suc m <= n
+    ==>
+    m < n
+  )
+[@@imandra_theorem]
+
+let lt_iff_leq m n =
+  Lt.(
+    m < n
+    ==>
+    Suc m <= n
+  )
+[@@imandra_theorem];;
+
+(**
+   #### Exercise `<-trans-revisited` {#less-trans-revisited}
+
+   Give an alternative proof that strict inequality is transitive,
+   using the relation between strict inequality and inequality and
+   the fact that inequality is transitive.
+*)
+
+[@@@max_induct 0i];;
+let lt_trans_2 m n p =
+  Lt.(
+    m < n &&
+    n < p
+    ==>
+    m < p
+  )
+[@@imandra_theorem];;
+[@@@max_induct 1i];;
+
+let rec even = function
+  | Zero -> true
+  | Suc n -> odd n
+and odd = function
+  | Zero -> false
+  | Suc n -> even n
+
+let e_plus_e_e m n =
+  Nat.(
+    even m &&
+    even n
+    ==>
+    even (m + n)
+  )
+[@@imandra_theorem]
+
+let o_plus_e_o m n =
+  Nat.(
+    odd m &&
+    even n
+    ==>
+    odd (m + n)
+  )
+[@@imandra_theorem]
