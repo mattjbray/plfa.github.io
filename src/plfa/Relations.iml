@@ -6,6 +6,8 @@ Imandra.reset_imported_files();;
 [@@@import "./Induction.iml"];;
 [@@@max_induct 1i];;
 open Naturals;;
+open Induction;;
+open Nat;;
 
 module Leq = struct
   open Nat
@@ -15,104 +17,88 @@ module Leq = struct
     | Zero, n -> true
     | Suc m, Suc n -> m <= n
     | _ -> false
-end
+end;;
+open Leq;;
 
 let inv_leq_suc m n =
-  Leq.(
-    Suc m <= Suc n
-    ==>
-    m <= n
-  )
+  Suc m <= Suc n
+  ==>
+  m <= n
+
 [@@imandra_theorem]
 
 let inv_leq_zero m n =
-  Leq.(
-    m <= Zero
-    ==>
-    m = Zero
-  )
+  m <= Zero
+  ==>
+  m = Zero
+
 [@@imandra_theorem]
 
 let leq_refl n =
-  Leq.(n <= n)
+  n <= n
 [@@imandra_theorem]
 [@@auto][@@rw]
 
 let leq_trans m n p =
-  Leq.(
-    m <= n && n <= p
-    ==>
-    m <= p
-  )
+  m <= n &&
+  n <= p
+  ==>
+  m <= p
 [@@imandra_theorem]
 [@@auto][@@fc]
 
 let leq_antisym m n =
-  Leq.(
-    m <= n && n <= m
-    ==>
-    m = n
-  )
+  m <= n &&
+  n <= m
+  ==>
+  m = n
 [@@imandra_theorem]
 [@@auto][@@rw]
 
 let leq_total m n =
-  Leq.(
-    if m = n then
-      m <= n && n <= m
-    else
-      m <= n || n <= m
-  )
+  if m = n then
+    m <= n && n <= m
+  else
+    m <= n || n <= m
 [@@imandra_theorem]
 [@@auto]
 
 let plus_mono_leq_right n p q =
-  Nat.(Leq.(
-    p <= q
-    ==>
-    n + p <= n + q
-  ))
+  p <= q
+  ==>
+  n + p <= n + q
 [@@imandra_theorem]
 [@@auto][@@rw]
 
 let n_lt_suc_n n =
-  Nat.(Leq.(
-      n <= Suc n
-    ))
+  n <= Suc n
 [@@imandra_theorem]
 [@@auto][@@rw]
 
 let lt_implies_lt_suc m n =
-  Nat.(Leq.(
-      m <= n
-      ==>
-      m <= Suc n
-    ))
+  m <= n
+  ==>
+  m <= Suc n
 [@@imandra_theorem]
 [@@auto][@@rw];;
 
 let m_lt_n_plus_m m n =
-  Nat.(Leq.(
-      m <= n + m
-    ))
+  m <= n + m
 [@@imandra_theorem]
 [@@auto][@@rw]
 
 let plus_mono_leq_left m n p =
-  Nat.(Leq.(
-    m <= n
-    ==>
-    m + p <= n + p
-  ))
+  m <= n
+  ==>
+  m + p <= n + p
 [@@imandra_theorem]
 [@@auto][@@rw]
 
 let plus_mono_leq m n p q =
-  Nat.(Leq.(
-    m <= n && p <= q
-    ==>
-    m + p <= n + q
-  ))
+  m <= n &&
+  p <= q
+  ==>
+  m + p <= n + q
 [@@imandra_theorem]
 [@@auto]
 [@@apply plus_mono_leq_left m n p]
@@ -126,47 +112,37 @@ let plus_mono_leq m n p q =
 *)
 
 let mul_mono_leq_right n p q =
-  Nat.(Leq.(
-    p <= q
-    ==>
-    n * p <= n * q
-  ))
+  p <= q
+  ==>
+  n * p <= n * q
 [@@imandra_theorem]
 [@@auto][@@rw]
 
 let mul_mono_leq_left m n p =
-  Nat.(Leq.(
-    m <= n
-    ==>
-    m * p <= n * p
-  ))
+  m <= n
+  ==>
+  m * p <= n * p
 [@@imandra_theorem]
 [@@auto][@@rw]
 
 let mul_mono_leq m n p q =
-  Nat.(Leq.(
-    m <= n &&
-    p <= q
-    ==>
-    m * p <= n * q
-  ))
+  m <= n &&
+  p <= q
+  ==>
+  m * p <= n * q
 [@@imandra_theorem]
 [@@auto][@@rw]
 [@@apply mul_mono_leq_left m n p]
 [@@apply mul_mono_leq_right n p q]
 
-(* TODO from here *)
-
 module Lt = struct
-  open Nat
-
-  let (<) m n =
+  let rec (<) m n =
     match m, n with
     | Zero, Suc n -> true
     | Suc m, Suc n -> m < n
     | _ -> false
-end
-;;
+end;;
+open Lt;;
 
 (**
    #### Exercise `<-trans` (recommended) {#less-trans}
@@ -175,13 +151,12 @@ end
 *)
 
 let lt_trans m n p =
-  Lt.(
-    m < n &&
-    n < p
-    ==>
-    m < p
-  )
+  m < n &&
+  n < p
+  ==>
+  m < p
 [@@imandra_theorem]
+[@@auto][@@fc]
 
 (**
    #### Exercise `trichotomy` {#trichotomy}
@@ -196,6 +171,7 @@ let lt_trans m n p =
 let lt_trichotomy m n =
   m < n || m = n || n < m
 [@@imandra_theorem]
+[@@auto]
 
 (**
    #### Exercise `+-mono-<` {#plus-mono-less}
@@ -204,30 +180,20 @@ let lt_trichotomy m n =
    As with inequality, some additional definitions may be required.
 *)
 
-let plus_mono_lt_right n p q =
-  Lt.(
-    p < q
-    ==>
-    n + p < n + q
-  )
+let plus_mono_lt_1 n p q =
+  p < q
+  ==>
+  p < n + q
 [@@imandra_theorem]
-
-let plus_mono_lt_left m n p =
-  Lt.(
-    m < n
-    ==>
-    m + p < n + p
-  )
-[@@imandra_theorem]
+[@@auto][@@fc]
 
 let plus_mono_lt m n p q =
-  Lt.(
-    m < n &&
-    p < q
-    ==>
-    m + p < n + q
-  )
+  m < n &&
+  p < q
+  ==>
+  m + p < n + q
 [@@imandra_theorem]
+[@@auto]
 
 (**
    #### Exercise `≤-iff-<` (recommended) {#leq-iff-less}
@@ -236,20 +202,12 @@ let plus_mono_lt m n p q =
 *)
 
 let leq_iff_lt m n =
-  Lt.(
-    Suc m <= n
-    ==>
-    m < n
-  )
+  (m < n)
+  =
+  (Suc m <= n)
 [@@imandra_theorem]
-
-let lt_iff_leq m n =
-  Lt.(
-    m < n
-    ==>
-    Suc m <= n
-  )
-[@@imandra_theorem];;
+[@@auto]
+[@@rw]
 
 (**
    #### Exercise `<-trans-revisited` {#less-trans-revisited}
@@ -259,16 +217,36 @@ let lt_iff_leq m n =
    the fact that inequality is transitive.
 *)
 
+let leq_suc n =
+  n <= Suc n
+[@@imandra_theorem]
+[@@auto][@@fc]
+;;
+
 [@@@max_induct 0i];;
+[@@@disable lt_trans];;
+
+(* TODO: how to apply leq_trans directly in lt_trans_2? *)
+let lt_trans_2a m n p =
+  m <= n &&
+  Suc n <= p
+  ==>
+  m <= p
+[@@imandra_theorem]
+[@@auto]
+[@@apply leq_trans m n (Suc n)]
+[@@fc]
+
 let lt_trans_2 m n p =
-  Lt.(
-    m < n &&
-    n < p
-    ==>
-    m < p
-  )
-[@@imandra_theorem];;
+  m < n &&
+  n < p
+  ==>
+  m < p
+[@@imandra_theorem]
+[@@auto]
+;;
 [@@@max_induct 1i];;
+[@@@enable leq_trans];;
 
 let rec even = function
   | Zero -> true
@@ -277,20 +255,33 @@ and odd = function
   | Zero -> false
   | Suc n -> even n
 
+(* TODO: why does this use (:def Leq.<=)? *)
 let e_plus_e_e m n =
-  Nat.(
-    even m &&
-    even n
-    ==>
-    even (m + n)
-  )
+  even m &&
+  even n
+  ==>
+  even (m + n)
 [@@imandra_theorem]
+[@@auto]
 
 let o_plus_e_o m n =
-  Nat.(
-    odd m &&
-    even n
-    ==>
-    odd (m + n)
-  )
+  odd m &&
+  even n
+  ==>
+  odd (m + n)
 [@@imandra_theorem]
+[@@auto]
+
+(**
+   #### Exercise `o+o≡e` (stretch) {#odd-plus-odd}
+
+   Show that the sum of two odd numbers is even.
+*)
+
+let o_plus_o_e m n =
+  odd m &&
+  odd n
+  ==>
+  even (m + n)
+[@@imandra_theorem]
+[@@auto]
