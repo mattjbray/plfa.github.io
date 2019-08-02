@@ -16,44 +16,42 @@ module Nat = struct
     | _ -> false
 end
 
-let leq_trans m n p =
+theorem leq_trans m n p =
   Nat.(
     (m <= n && n <= p)[@trigger]
     ==>
     m <= p
   )
-[@@imandra_theorem][@@auto][@@fc]
+[@@auto][@@fc]
 
-let lt_iff_leq m n =
+theorem lt_iff_leq m n =
   Nat.(
     (m < n) = (Suc m <= n)
   )
-[@@imandra_theorem][@@auto][@@rw];;
+[@@auto][@@rw];;
 
-let leq_suc n =
+theorem leq_suc n =
   Nat.(
     n <= Suc n
   )
-[@@imandra_theorem][@@auto][@@fc]
+[@@auto][@@fc]
 
-let leq_suc_bridge m n p =
+theorem leq_suc_bridge m n p =
   Nat.(
     (Suc m <= n && Suc n <= p)[@trigger]
     ==>
     n <= Suc n
   )
-[@@imandra_theorem]
 [@@auto][@@fc];;
 
 [@@@max_induct 0i];;
 
-let lt_trans m n p =
+theorem lt_trans m n p =
   Nat.(
     m < n &&
     n < p
     ==>
     m < p
   )
-[@@imandra_theorem]
 [@@auto]
 [@@disable Nat.(<=)]
