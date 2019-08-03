@@ -1,0 +1,24 @@
+[@@@import "./Nat.iml"]
+
+type t =
+  | Nil
+  | X0 of t
+  | X1 of t
+
+let nil = Nil
+let x0 t = X0 t
+let x1 t = X1 t
+
+let rec inc = function
+  | Nil -> x1 nil
+  | X0 b -> x1 b
+  | X1 b -> x0 (inc b)
+
+let rec to_ : Nat.t -> t = function
+  | Zero -> x0 nil
+  | Suc n -> inc (to_ n)
+
+let rec from : t -> Nat.t = function
+  | Nil -> Nat.Zero
+  | X0 t -> Nat.(two * from t)
+  | X1 t -> Nat.(Suc (two * from t))

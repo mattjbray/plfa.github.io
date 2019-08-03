@@ -1,0 +1,46 @@
+(**
+  Give an alternative proof that strict inequality is transitive, using the
+  relation between strict inequality and inequality and the fact that
+  inequality is transitive.
+
+  https://plfa.github.io/Relations/#less-trans-revisited 
+*)
+[@@@import "./Nat.iml"]
+
+theorem leq_trans m n p =
+  Nat.(
+    (m <= n && n <= p)[@trigger]
+    ==>
+    m <= p
+  )
+[@@auto]
+
+theorem lt_iff_leq m n =
+  Nat.(
+    (m < n) = (Suc m <= n)
+  )
+[@@auto];;
+
+theorem leq_suc n =
+  Nat.(
+    n <= Suc n
+  )
+[@@auto]
+
+[@@@max_induct 0i]
+[@@@debug "simplify:4"]
+
+theorem lt_trans m n p =
+  Nat.(
+    m < n &&
+    n < p
+    ==>
+    m < p
+  )
+[@@auto]
+[@@apply lt_iff_leq m n]
+[@@apply lt_iff_leq n p]
+[@@apply lt_iff_leq m p]
+[@@apply leq_suc n]
+[@@apply leq_trans (Suc m) n (Suc n)]
+[@@apply leq_trans (Suc m) (Suc n) p]
