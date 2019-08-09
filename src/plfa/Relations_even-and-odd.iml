@@ -1,0 +1,41 @@
+(* 
+https://plfa.github.io/Relations/#even-and-odd
+ *)
+[@@@import "./Nat.iml"]
+open Nat
+
+[@@@max_induct 1i]
+
+let rec even = function
+  | Zero -> true
+  | Suc n -> odd n
+and odd = function
+  | Zero -> false
+  | Suc n -> even n
+
+theorem e_plus_e_e m n =
+  even m &&
+  even n
+  ==>
+  even (m + n)
+[@@auto]
+
+theorem o_plus_e_o m n =
+  odd m &&
+  even n
+  ==>
+  odd (m + n)
+[@@auto]
+
+(**
+   #### Exercise `o+o≡e` (stretch) {#odd-plus-odd}
+
+   Show that the sum of two odd numbers is even.
+*)
+
+theorem o_plus_o_e m n =
+  odd m &&
+  odd n
+  ==>
+  even (m + n)
+[@@auto]

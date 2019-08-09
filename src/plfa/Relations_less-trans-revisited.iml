@@ -1,34 +1,38 @@
 (**
+  https://plfa.github.io/Relations/#leq-iff-less
+
+  Exercise ≤-iff-< (recommended)
+
+  Show that suc m ≤ n implies m < n, and conversely.
+
+  https://plfa.github.io/Relations/#less-trans-revisited 
+
+  Exercise <-trans-revisited
+
   Give an alternative proof that strict inequality is transitive, using the
   relation between strict inequality and inequality and the fact that
   inequality is transitive.
-
-  https://plfa.github.io/Relations/#less-trans-revisited 
 *)
+
 [@@@import "./Nat.iml"]
+open Nat
+[@@@max_induct 1i]
 
 theorem leq_trans m n p =
-  Nat.(
-    (m <= n && n <= p)[@trigger]
-    ==>
-    m <= p
-  )
+  m <= n && n <= p
+  ==>
+  m <= p
 [@@auto]
 
 theorem lt_iff_leq m n =
-  Nat.(
-    (m < n) = (Suc m <= n)
-  )
+  m < n = (Suc m <= n)
 [@@auto];;
 
 theorem leq_suc n =
-  Nat.(
-    n <= Suc n
-  )
+  n <= Suc n
 [@@auto]
 
 [@@@max_induct 0i]
-[@@@debug "simplify:4"]
 
 theorem lt_trans m n p =
   Nat.(

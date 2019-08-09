@@ -1,37 +1,17 @@
-[@@@reset];;
-Imandra.reset_imported_files();;
-[@@@redef true];;
-[@@@max_induct 2i];;
-[@@@import "./Naturals.iml"];;
-[@@@import "./Induction.iml"];;
+[@@@import "./Nat.iml"];;
 [@@@max_induct 1i];;
-open Naturals;;
-open Induction;;
 open Nat;;
-
-module Leq = struct
-  open Nat
-
-  let rec (<=) m n =
-    match m, n with
-    | Zero, n -> true
-    | Suc m, Suc n -> m <= n
-    | _ -> false
-end;;
-open Leq;;
 
 let inv_leq_suc m n =
   Suc m <= Suc n
   ==>
   m <= n
-
 [@@imandra_theorem]
 
 let inv_leq_zero m n =
   m <= Zero
   ==>
   m = Zero
-
 [@@imandra_theorem]
 
 let leq_refl n =
@@ -135,15 +115,6 @@ let mul_mono_leq m n p q =
 [@@apply mul_mono_leq_left m n p]
 [@@apply mul_mono_leq_right n p q]
 
-module Lt = struct
-  let rec (<) m n =
-    match m, n with
-    | Zero, Suc n -> true
-    | Suc m, Suc n -> m < n
-    | _ -> false
-end;;
-open Lt;;
-
 (**
    #### Exercise `<-trans` (recommended) {#less-trans}
 
@@ -170,118 +141,5 @@ let lt_trans m n p =
 
 let lt_trichotomy m n =
   m < n || m = n || n < m
-[@@imandra_theorem]
-[@@auto]
-
-(**
-   #### Exercise `+-mono-<` {#plus-mono-less}
-
-   Show that addition is monotonic with respect to strict inequality.
-   As with inequality, some additional definitions may be required.
-*)
-
-let plus_mono_lt_1 n p q =
-  p < q
-  ==>
-  p < n + q
-[@@imandra_theorem]
-[@@auto][@@fc]
-
-let plus_mono_lt m n p q =
-  m < n &&
-  p < q
-  ==>
-  m + p < n + q
-[@@imandra_theorem]
-[@@auto]
-
-(**
-   #### Exercise `≤-iff-<` (recommended) {#leq-iff-less}
-
-   Show that `suc m ≤ n` implies `m < n`, and conversely.
-*)
-
-let leq_iff_lt m n =
-  (m < n)
-  =
-  (Suc m <= n)
-[@@imandra_theorem]
-[@@auto]
-[@@rw]
-
-(**
-   #### Exercise `<-trans-revisited` {#less-trans-revisited}
-
-   Give an alternative proof that strict inequality is transitive,
-   using the relation between strict inequality and inequality and
-   the fact that inequality is transitive.
-*)
-
-let leq_suc n =
-  n <= Suc n
-[@@imandra_theorem]
-[@@auto][@@fc]
-;;
-
-[@@@max_induct 0i];;
-[@@@disable lt_trans];;
-
-(* TODO: how to apply leq_trans directly in lt_trans_2? *)
-let lt_trans_2a m n p =
-  m <= n &&
-  Suc n <= p
-  ==>
-  m <= p
-[@@imandra_theorem]
-[@@auto]
-[@@apply leq_trans m n (Suc n)]
-[@@fc]
-
-let lt_trans_2 m n p =
-  m < n &&
-  n < p
-  ==>
-  m < p
-[@@imandra_theorem]
-[@@auto]
-;;
-[@@@max_induct 1i];;
-[@@@enable leq_trans];;
-
-let rec even = function
-  | Zero -> true
-  | Suc n -> odd n
-and odd = function
-  | Zero -> false
-  | Suc n -> even n
-
-(* TODO: why does this use (:def Leq.<=)? *)
-let e_plus_e_e m n =
-  even m &&
-  even n
-  ==>
-  even (m + n)
-[@@imandra_theorem]
-[@@auto]
-
-let o_plus_e_o m n =
-  odd m &&
-  even n
-  ==>
-  odd (m + n)
-[@@imandra_theorem]
-[@@auto]
-
-(**
-   #### Exercise `o+o≡e` (stretch) {#odd-plus-odd}
-
-   Show that the sum of two odd numbers is even.
-*)
-
-let o_plus_o_e m n =
-  odd m &&
-  odd n
-  ==>
-  even (m + n)
 [@@imandra_theorem]
 [@@auto]

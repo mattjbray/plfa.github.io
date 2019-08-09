@@ -1,5 +1,5 @@
-[@@@import "./Naturals.iml"];;
-open Naturals;;
+[@@@import "./Nat.iml"];;
+open Nat
 
 let plus_assoc m n p =
   Nat.(m + (n + p) = (m + n) + p)

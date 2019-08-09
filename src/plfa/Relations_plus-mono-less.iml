@@ -1,0 +1,31 @@
+(**
+  https://plfa.github.io/Relations/#plus-mono-less
+
+  Exercise +-mono-<
+
+  Show that addition is monotonic with respect to strict inequality. As with
+  inequality, some additional definitions may be required.
+*)
+
+[@@@import "./Nat.iml"]
+open Nat
+
+[@@@max_induct 1i]
+
+theorem plus_suc m n =
+  m + Suc n = Suc (m + n)
+[@@auto][@@rw]
+
+theorem plus_mono_lt_bridge n p q =
+  p < q
+  ==>
+  p < n + q
+[@@auto][@@rw]
+
+let plus_mono_lt m n p q =
+  m < n &&
+  p < q
+  ==>
+  m + p < n + q
+[@@imandra_theorem]
+[@@auto]
