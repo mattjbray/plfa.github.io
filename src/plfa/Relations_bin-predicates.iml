@@ -1,0 +1,56 @@
+(**
+Define a predicate
+
+    Can : Bin → Set
+
+over all bitstrings that holds if the bitstring is canonical, meaning
+it has no leading zeros; the first representation of eleven above is
+canonical, and the second is not.  To define it, you will need an
+auxiliary predicate
+
+    One : Bin → Set
+
+that holds only if the bistring has a leading one.  A bitstring is
+canonical if it has a leading one (representing a positive number) or
+if it consists of a single zero (representing zero).
+
+Show that increment preserves canonical bitstrings:
+
+    Can x
+    ------------
+    Can (inc x)
+
+Show that converting a natural to a bitstring always yields a
+canonical bitstring:
+
+    ----------
+    Can (to n)
+
+Show that converting a canonical bitstring to a natural
+and back is the identity:
+
+    Can x
+    ---------------
+    to (from x) ≡ x
+
+(Hint: For each of these, you may first need to prove related
+properties of `One`.)
+*)
+
+
+[@@@import "./Bin.iml"]
+open Bin
+
+let rec one : t -> bool = function
+  | X1 Nil -> true
+  | Nil -> false
+  | X0 b -> one b
+  | X1 b -> one b
+
+let can : t -> bool = function
+  | X0 Nil -> true
+  | b -> one b
+
+(* theorem inc_can x = *)
+(*   can x ==> can (inc x) *)
+(* [@@auto] *)
