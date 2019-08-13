@@ -51,6 +51,8 @@ let can : t -> bool = function
   | X0 Nil -> true
   | b -> one b
 
-(* theorem inc_can x = *)
-(*   can x ==> can (inc x) *)
-(* [@@auto] *)
+[@@@induct_unroll 0i]
+
+theorem inc_can x =
+  can x ==> can (inc x)
+[@@auto]
